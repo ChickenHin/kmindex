@@ -1,24 +1,7 @@
 name: kmindex
 
 on:
-  push:
-    paths-ignore:
-      - '.github/workflows/doc.yml'
-      - 'README.md'
-      - 'docker/**'
-      - 'conda/**'
-      - 'scripts/**'
-      - '.gitignore'
-      - 'docs/kmindex/**'
-  pull_request:
-      paths-ignore:
-      - '.github/workflows/doc.yml'
-      - 'README.md'
-      - 'docker/**'
-      - 'conda/**'
-      - 'scripts/**'
-      - '.gitignore'
-      - 'docs/kmindex/**'
+  workflow_dispatch: 
 
 jobs:
   build:
@@ -89,37 +72,37 @@ jobs:
         shell: bash
         run: cd build && ctest --verbose
 
-      - name: Package
-        if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
-        shell: bash
-        run: cd build && make package
+      # - name: Package
+      #   if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
+      #   shell: bash
+      #   run: cd build && make package
 
-      - name: Get tag
-        if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
-        id: tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      # - name: Get tag
+      #   if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
+      #   id: tag
+      #   run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
-      - name: Collect files
-        if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
-        run: |
-          mkdir archive_files
-          if [[ "${{ matrix.os }}" == ubuntu* ]]; then
-            mv build/kmindex-${{ steps.tag.outputs.TAG }}-bin-Linux.tar.gz archive_files/kmindex-${{ steps.tag.outputs.TAG }}-Linux-${{ matrix.arch }}.tar.gz
-          else
-            mv build/kmindex-${{ steps.tag.outputs.TAG }}-bin-Darwin.tar.gz archive_files/kmindex-${{ steps.tag.outputs.TAG }}-macOS-${{ matrix.arch }}.tar.gz
-          fi
+      # - name: Collect files
+      #   if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
+      #   run: |
+      #     mkdir archive_files
+      #     if [[ "${{ matrix.os }}" == ubuntu* ]]; then
+      #       mv build/kmindex-${{ steps.tag.outputs.TAG }}-bin-Linux.tar.gz archive_files/kmindex-${{ steps.tag.outputs.TAG }}-Linux-${{ matrix.arch }}.tar.gz
+      #     else
+      #       mv build/kmindex-${{ steps.tag.outputs.TAG }}-bin-Darwin.tar.gz archive_files/kmindex-${{ steps.tag.outputs.TAG }}-macOS-${{ matrix.arch }}.tar.gz
+      #     fi
 
-      - name: Release
-        if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
-        uses: svenstaro/upload-release-action@v2
-        with:
-          release_name: Release ${{ steps.tag.outputs.TAG }}
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: 'archive_files/*'
-          file_glob: true
-          tag: ${{ github.ref }}
-          body: ""
-          prerelease: true
+      # - name: Release
+      #   if: matrix.build_type == 'Release' && startsWith(github.event.ref, 'refs/tags/v')
+      #   uses: svenstaro/upload-release-action@v2
+      #   with:
+      #     release_name: Release ${{ steps.tag.outputs.TAG }}
+      #     repo_token: ${{ secrets.GITHUB_TOKEN }}
+      #     file: 'archive_files/*'
+      #     file_glob: true
+      #     tag: ${{ github.ref }}
+      #     body: ""
+      #     prerelease: true
 
 
 
