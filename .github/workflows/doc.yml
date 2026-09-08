@@ -1,9 +1,9 @@
 name: kmindex-doc
 
 on:
-  push:
-    paths: ['docs/kmindex/**']
-    branches: ['main']
+  # push:
+  #   paths: ['docs/kmindex/**']
+  #   branches: ['main']
 
 permissions:
   contents: write
